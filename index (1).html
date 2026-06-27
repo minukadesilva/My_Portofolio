@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minuka De Silva — Creative Graphic Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0A0B;
+    --ink-2:#111114;
+    --paper:#F5F3EE;
+    --stone:#9A9489;
+    --graphite:#3D3D42;
+    --graphite-soft:#2A2A2E;
+    --vermillion:#FF4D2E;
+    --marker:#FFD23F;
+    --display: 'Archivo Black', sans-serif;
+    --mono: 'Space Mono', monospace;
+    --body: 'Inter', sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    overflow-x:hidden;
+    cursor:none;
+  }
+
+  @media (max-width: 860px){
+    body{cursor:auto;}
+  }
+
+  ::selection{background:var(--vermillion);color:var(--ink);}
+
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- Custom cursor (signature) ---------- */
+  .cursor-dot{
+    position:fixed;
+    width:8px;height:8px;
+    border-radius:50%;
+    background:var(--vermillion);
+    pointer-events:none;
+    z-index:9999;
+    transform:translate(-50%,-50%);
+    transition:width .2s, height .2s, background .2s;
+  }
+  .cursor-ring{
+    position:fixed;
+    width:34px;height:34px;
+    border:1px solid var(--paper);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:9998;
+    transform:translate(-50%,-50%);
+    transition:width .25s, height .25s, border-color .25s, opacity .25s;
+    opacity:.5;
+  }
+  .cursor-label{
+    position:fixed;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--marker);
+    padding:3px 8px;
+    border-radius:2px;
+    pointer-events:none;
+    z-index:9999;
+    opacity:0;
+    transition:opacity .2s;
+    transform:translate(14px, -6px);
+    white-space:nowrap;
+  }
+  @media (max-width: 860px){
+    .cursor-dot,.cursor-ring,.cursor-label{display:none;}
+  }
+
+  /* ---------- Canvas ruler chrome ---------- */
+  .ruler-top, .ruler-left{
+    position:fixed;
+    z-index:40;
+    background:var(--ink-2);
+    pointer-events:none;
+  }
+  .ruler-top{
+    top:0;left:0;right:0;height:22px;
+    background-image: repeating-linear-gradient(to right, var(--graphite) 0 1px, transparent 1px 40px);
+    border-bottom:1px solid var(--graphite);
+  }
+  .ruler-left{
+    top:0;left:0;bottom:0;width:22px;
+    background-image: repeating-linear-gradient(to bottom, var(--graphite) 0 1px, transparent 1px 40px);
+    border-right:1px solid var(--graphite);
+  }
+  @media (max-width: 860px){
+    .ruler-top,.ruler-left{display:none;}
+  }
+  .canvas-pad{padding-top:22px;padding-left:22px;}
+  @media (max-width: 860px){.canvas-pad{padding-top:0;padding-left:0;}}
+
+  /* ---------- Nav ---------- */
+  nav{
+    position:fixed;
+    top:22px;left:22px;right:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 5vw;
+    mix-blend-mode:difference;
+  }
+  @media (max-width: 860px){nav{top:0;left:0;}}
+  .nav-mark{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.05em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .nav-mark .dot{width:7px;height:7px;border-radius:50%;background:var(--vermillion);display:inline-block;}
+  .nav-links{display:flex;gap:32px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
+  .nav-links a{position:relative;padding-bottom:3px;}
+  .nav-links a::after{
+    content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:currentColor;
+    transition:width .3s;
+  }
+  .nav-links a:hover::after{width:100%;}
+  @media (max-width:640px){.nav-links{display:none;}}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    padding:0 5vw;
+    border-bottom:1px solid var(--graphite);
+  }
+  .hero-grid{
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(var(--graphite-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--graphite-soft) 1px, transparent 1px);
+    background-size:60px 60px;
+    opacity:.35;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 90%);
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--vermillion);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:28px;
+    z-index:2;
+    position:relative;
+  }
+  .eyebrow::before{
+    content:'';width:38px;height:1px;background:var(--vermillion);
+  }
+  h1.hero-title{
+    font-family:var(--display);
+    font-size:clamp(3rem, 9vw, 8.5rem);
+    line-height:.94;
+    letter-spacing:-.01em;
+    text-transform:uppercase;
+    z-index:2;
+    position:relative;
+    max-width:1200px;
+  }
+  h1.hero-title .accent{color:var(--vermillion);}
+  h1.hero-title .outline{
+    color:transparent;
+    -webkit-text-stroke:1.5px var(--paper);
+  }
+  .hero-sub{
+    margin-top:34px;
+    max-width:560px;
+    font-size:clamp(1rem, 1.4vw, 1.15rem);
+    color:var(--stone);
+    line-height:1.65;
+    z-index:2;
+    position:relative;
+  }
+  .hero-sub b{color:var(--paper);font-weight:600;}
+  .hero-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:32px;
+    z-index:2;
+    position:relative;
+  }
+  .tag{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    border:1px solid var(--graphite);
+    padding:7px 14px;
+    border-radius:100px;
+    color:var(--stone);
+  }
+  .hero-cta{
+    display:flex;
+    gap:18px;
+    margin-top:46px;
+    z-index:2;
+    position:relative;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:16px 30px;
+    border-radius:2px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition:transform .25s cubic-bezier(.2,.8,.2,1), background .25s, color .25s, border-color .25s;
+  }
+  .btn-fill{background:var(--paper);color:var(--ink);}
+  .btn-fill:hover{background:var(--vermillion);color:var(--ink);transform:translateY(-2px);}
+  .btn-line{border:1px solid var(--graphite);color:var(--paper);}
+  .btn-line:hover{border-color:var(--paper);transform:translateY(-2px);}
+
+  .hero-meta{
+    position:absolute;
+    bottom:40px;
+    right:5vw;
+    z-index:2;
+    text-align:right;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--stone);
+    letter-spacing:.05em;
+    line-height:1.8;
+  }
+  @media (max-width:760px){.hero-meta{display:none;}}
+
+  .scroll-cue{
+    position:absolute;
+    bottom:40px;
+    left:5vw;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--stone);
+  }
+  .scroll-cue .line{width:1px;height:36px;background:var(--graphite);position:relative;overflow:hidden;}
+  .scroll-cue .line::after{
+    content:'';position:absolute;top:-100%;left:0;width:100%;height:100%;
+    background:var(--vermillion);
+    animation:scrollline 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollline{0%{top:-100%;}50%{top:0;}100%{top:100%;}}
+
+  /* ---------- Section shared ---------- */
+  section{padding:140px 5vw;position:relative;}
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:40px;
+    margin-bottom:80px;
+    border-bottom:1px solid var(--graphite);
+    padding-bottom:32px;
+  }
+  @media (max-width:760px){.section-head{flex-direction:column;align-items:flex-start;gap:20px;}}
+  .section-num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--vermillion);
+    letter-spacing:.1em;
+    margin-bottom:18px;
+    display:block;
+  }
+  .section-title{
+    font-family:var(--display);
+    font-size:clamp(2.2rem,5vw,4.2rem);
+    text-transform:uppercase;
+    line-height:1;
+  }
+  .section-desc{
+    max-width:340px;
+    color:var(--stone);
+    font-size:.98rem;
+    line-height:1.6;
+  }
+
+  /* ---------- ABOUT / EXPERIENCE ---------- */
+  .about-wrap{
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:90px;
+  }
+  @media (max-width:900px){.about-wrap{grid-template-columns:1fr;gap:60px;}}
+
+  .about-statement{
+    font-family:var(--body);
+    font-weight:300;
+    font-size:clamp(1.3rem,2.4vw,1.9rem);
+    line-height:1.5;
+    color:var(--paper);
+  }
+  .about-statement b{
+    font-weight:700;
+    color:var(--marker);
+    font-style:normal;
+  }
+  .about-statement .em{color:var(--vermillion);font-weight:600;}
+
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+    margin-top:56px;
+  }
+  @media (max-width:640px){.stat-row{grid-template-columns:1fr 1fr;}}
+  .stat{
+    border-top:1px solid var(--graphite);
+    padding-top:18px;
+  }
+  .stat .num{
+    font-family:var(--display);
+    font-size:clamp(1.8rem,3vw,2.6rem);
+    color:var(--paper);
+    display:block;
+  }
+  .stat .num .accent{color:var(--vermillion);}
+  .stat .label{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--stone);
+    margin-top:6px;
+    display:block;
+  }
+
+  /* timeline */
+  .timeline{position:relative;border-left:1px solid var(--graphite);padding-left:36px;}
+  .role{
+    position:relative;
+    padding-bottom:46px;
+  }
+  .role:last-child{padding-bottom:0;}
+  .role::before{
+    content:'';
+    position:absolute;
+    left:-41px;
+    top:4px;
+    width:9px;height:9px;
+    border-radius:50%;
+    background:var(--ink);
+    border:2px solid var(--vermillion);
+  }
+  .role.current::before{background:var(--vermillion);}
+  .role-period{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--vermillion);
+    margin-bottom:6px;
+    display:block;
+  }
+  .role-title{
+    font-weight:700;
+    font-size:1.08rem;
+    color:var(--paper);
+  }
+  .role-org{
+    font-size:.92rem;
+    color:var(--stone);
+    margin-bottom:14px;
+  }
+  .role ul{
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .role li{
+    font-size:.9rem;
+    color:#C9C2B4;
+    line-height:1.55;
+    padding-left:16px;
+    position:relative;
+  }
+  .role li::before{
+    content:'—';
+    position:absolute;
+    left:0;
+    color:var(--graphite);
+  }
+
+  /* ---------- PORTFOLIO / WORK ---------- */
+   .work-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:18px;
+  }
+  @media (max-width:980px){.work-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:620px){.work-grid{grid-template-columns:1fr;}}
+
+  .artboard{
+    background:var(--ink-2);
+    aspect-ratio:1/1;
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--graphite);
+    transition:border-color .3s;
+  }
+  .artboard:hover{border-color:var(--vermillion);}
+  .artboard-canvas{
+    height:100%;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, var(--swatch-a,#2A2A2E), var(--swatch-b,#1c1c1f));
+  }
+  /* blurred fill — same image, scaled and blurred, sits behind the sharp contained image
+     to letterbox non-square artwork without bars */
+  .artboard-fill{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:blur(28px) saturate(1.3) brightness(.55);
+    transform:scale(1.15);
+    z-index:1;
+  }
+  .artboard-img{
+    position:relative;
+    z-index:2;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    transition:transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .artboard:hover .artboard-img{transform:scale(1.04);}
+  .artboard-canvas svg{width:62%;height:62%;position:relative;z-index:2;transition:transform .5s cubic-bezier(.2,.8,.2,1);}
+  .artboard:hover .artboard-canvas svg{transform:scale(1.08) rotate(-2deg);}
+  .artboard-canvas::before{
+    content:'';
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:24px 24px;
+  }
+
+  .work-note{
+    margin-top:40px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--stone);
+    letter-spacing:.03em;
+    line-height:1.7;
+    border-left:2px solid var(--graphite);
+    padding-left:18px;
+    max-width:620px;
+  }
+  /* ---------- CONTACT ---------- */
+  .contact-section{
+    border-top:1px solid var(--graphite);
+    background:var(--ink-2);
+  }
+  .contact-wrap{
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:80px;
+  }
+  @media (max-width:900px){.contact-wrap{grid-template-columns:1fr;gap:50px;}}
+
+  .contact-big{
+    font-family:var(--display);
+    font-size:clamp(2.4rem,7vw,5.5rem);
+    line-height:1;
+    text-transform:uppercase;
+  }
+  .contact-big a{
+    color:var(--paper);
+    position:relative;
+    display:inline-block;
+    transition:color .3s;
+  }
+  .contact-big a:hover{color:var(--vermillion);}
+  .contact-big a::after{
+    content:'';
+    position:absolute;
+    left:0;bottom:.06em;
+    width:100%;height:.06em;
+    background:var(--vermillion);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .contact-big a:hover::after{transform:scaleX(1);}
+
+  .contact-list{
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    margin-top:44px;
+  }
+  .contact-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+    border-bottom:1px solid var(--graphite);
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.04em;
+  }
+  .contact-row .k{color:var(--stone);text-transform:uppercase;font-size:11px;}
+  .contact-row .v{color:var(--paper);}
+  .contact-row a.v:hover{color:var(--vermillion);}
+
+  .socials{
+    display:flex;
+    gap:14px;
+    margin-top:36px;
+    flex-wrap:wrap;
+  }
+  .social-pill{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    border:1px solid var(--graphite);
+    padding:11px 20px;
+    border-radius:100px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:all .25s;
+  }
+  .social-pill:hover{border-color:var(--paper);background:var(--paper);color:var(--ink);}
+  .social-pill .arrow{transition:transform .25s;}
+  .social-pill:hover .arrow{transform:translate(2px,-2px);}
+
+  .availability{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#7CDB8A;
+    margin-bottom:28px;
+  }
+  .availability .pulse{
+    width:8px;height:8px;border-radius:50%;background:#7CDB8A;
+    box-shadow:0 0 0 0 rgba(124,219,138,.6);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(124,219,138,.5);}
+    70%{box-shadow:0 0 0 8px rgba(124,219,138,0);}
+    100%{box-shadow:0 0 0 0 rgba(124,219,138,0);}
+  }
+
+  footer{
+    padding:26px 5vw;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.05em;
+    color:var(--stone);
+    border-top:1px solid var(--graphite);
+    text-transform:uppercase;
+  }
+  @media (max-width:640px){footer{flex-direction:column;gap:10px;text-align:center;}}
+
+  /* reveal on scroll */
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--vermillion);
+    outline-offset:3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-label" id="cursorLabel"></div>
+
+<div class="ruler-top"></div>
+<div class="ruler-left"></div>
+
+<div class="canvas-pad">
+
+<nav>
+  <div class="nav-mark"><span class="dot"></span> MINUKA.DS</div>
+  <div class="nav-links">
+    <a href="#about" data-cursor="VIEW">About</a>
+    <a href="#work" data-cursor="VIEW">Work</a>
+    <a href="#contact" data-cursor="VIEW">Contact</a>
+  </div>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero" id="top">
+  <div class="hero-grid"></div>
+
+  <div class="eyebrow">Creative Graphic Designer &amp; Digital Marketer</div>
+
+  <h1 class="hero-title">
+    HI, I'M<br>
+    <span class="accent">MINUKA</span> <span class="outline">DE SILVA.</span>
+  </h1>
+
+  <p class="hero-sub">
+    I design <b>social media creatives, ad campaigns, and brand visuals</b> that get noticed and get clicked. Over the past years I've shipped <b>500+ creatives</b> for businesses, events, and digital campaigns — always clean, always intentional.
+  </p>
+
+  <div class="hero-tags">
+    <span class="tag">Social Media Design</span>
+    <span class="tag">Meta Ad Creatives</span>
+    <span class="tag">Brand Identity</span>
+    <span class="tag">Event &amp; Campaign Posters</span>
+  </div>
+
+  <div class="hero-cta">
+    <a href="#work" class="btn btn-fill" data-cursor="SCROLL">View My Work →</a>
+    <a href="#contact" class="btn btn-line" data-cursor="SAY HI">Get In Touch</a>
+  </div>
+
+  <div class="hero-meta">
+    BASED IN SRI LANKA<br>
+    OPEN TO FREELANCE <br>
+  </div>
+
+  <div class="scroll-cue"><div class="line"></div> Scroll</div>
+</header>
+
+<!-- ===================== ABOUT ===================== -->
+<section id="about">
+  <div class="section-head reveal">
+    <div>
+      <span class="section-num">01 / ABOUT</span>
+      <h2 class="section-title">The Designer<br>Behind The Pixels</h2>
+    </div>
+    <p class="section-desc">3 years of hands-on, high-output design work across branding, advertising, and digital marketing — for real businesses, real campaigns, real deadlines.</p>
+  </div>
+
+  <div class="about-wrap">
+    <div>
+      <p class="about-statement reveal">
+        I'm a <span class="em">creative graphic designer</span>  who believes good design isn't just decoration — it's a business tool. I build visuals that <span class="em">drive engagement</span>, strengthen brands, and make campaigns convert. Clean. Modern. Intentional.
+      </p>
+
+      <div class="stat-row reveal">
+        <div class="stat">
+          <span class="num"><span class="accent">500</span>+</span>
+          <span class="label">Creatives Designed</span>
+        </div>
+        <div class="stat">
+          <span class="num">3<span class="accent">+</span></span>
+          <span class="label">Years Experience</span>
+        </div>
+        <div class="stat">
+          <span class="num">4</span>
+          <span class="label">Teams &amp; Communities</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline reveal">
+      <div class="role current">
+        <span class="role-period">Jan 2024 — Feb 2025</span>
+        <div class="role-title">Creative Graphic Designer </div>
+        <div class="role-org">Loku Business &amp; Loku Business Skills</div>
+        <ul>
+          <li>Designed 500+ social media creatives, advertisements, banners, thumbnails, and promotional materials.</li>
+          <li>Created high-converting Facebook and Instagram ad creatives for multiple brands and campaigns.</li>
+          <li>Developed visual branding concepts and marketing materials while maintaining brand consistency.</li>
+          <li>Collaborated with marketing strategists and business leaders to transform ideas into engaging visual content.</li>
+          <li>Designed creatives for educational programs, events, product launches, and digital campaigns.</li>
+          <li>Contributed to improving customer engagement through strategic visual communication.</li>
+        </ul>
+      </div>
+
+      <div class="role">
+        <span class="role-period">Ongoing</span>
+        <div class="role-title">Design Pillar Member</div>
+        <div class="role-org">IEEE Student Branch — University of Moratuwa</div>
+        <ul>
+          <li>Contribute to branding, social media creatives, and promotional materials for IEEE events.</li>
+        </ul>
+      </div>
+
+      <div class="role">
+        <span class="role-period">Ongoing</span>
+        <div class="role-title">Design Pillar Member</div>
+        <div class="role-org">IEEE Computer Society Student Branch — University of Moratuwa</div>
+        <ul>
+          <li>Design event posters, digital campaigns, and visual assets.</li>
+        </ul>
+      </div>
+
+      <div class="role">
+        <span class="role-period">Ongoing</span>
+        <div class="role-title">Creative Team Member</div>
+        <div class="role-org">FIT Moments — Faculty of Information Technology, University of Moratuwa</div>
+        <ul>
+          <li>Design promotional content and event branding for faculty activities.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WORK / PORTFOLIO ===================== -->
+<section id="work">
+  <div class="section-head reveal">
+    <div>
+      <span class="section-num">02 / SELECTED WORK</span>
+      <h2 class="section-title">Open<br>Artboards</h2>
+    </div>
+  </div>
+
+  <div class="work-grid reveal" id="workGrid">
+    <!-- Card 1 -->
+    <div class="artboard" style="--swatch-a:#2c2420;--swatch-b:#15110f;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\1.jpg" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\1.jpg" alt="Project 1">
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="artboard" style="--swatch-a:#231f2e;--swatch-b:#110f17;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\2.jpg" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\2.jpg" alt="Project 2">
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="artboard" style="--swatch-a:#1c2624;--swatch-b:#0e1413;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\3.png" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\3.png" alt="Project 3">
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="artboard" style="--swatch-a:#231a1f;--swatch-b:#120d10;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\4.png" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\4.png" alt="Project 4">
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="artboard" style="--swatch-a:#1f2330;--swatch-b:#0f1118;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images/5.jpeg" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images/5.jpeg" alt="Project 5">
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="artboard" style="--swatch-a:#1d241f;--swatch-b:#0d120e;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\6.jpeg" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\6.jpeg" alt="Project 6">
+      </div>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="artboard" style="--swatch-a:#291f24;--swatch-b:#150f12;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\7.jpeg" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\7.jpeg" alt="Project 7">
+      </div>
+    </div>
+
+    <!-- Card 8 -->
+    <div class="artboard" style="--swatch-a:#1f1f29;--swatch-b:#0f0f15;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\8.png" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\8.png" alt="Project 8">
+      </div>
+    </div>
+
+    <!-- Card 9 -->
+    <div class="artboard" style="--swatch-a:#241f29;--swatch-b:#120f15;">
+      <div class="artboard-canvas">
+        <img class="artboard-fill" src="images\9.jpg" alt="" aria-hidden="true">
+        <img class="artboard-img" src="images\9.jpg" alt="Project 9">
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ===================== CONTACT ===================== -->
+<section class="contact-section" id="contact">
+  <div class="contact-wrap">
+    <div class="reveal">
+      <span class="section-num">03 / CONTACT</span>
+      <div class="availability"><span class="pulse"></span> Open to Freelance</div>
+      <h2 class="contact-big">
+        Let's design<br>
+        something that<br>
+        <a href="mailto:hello@minukadesilva.com" data-cursor="EMAIL ME">actually works.</a>
+      </h2>
+
+      <div class="socials">
+        <a href="mailto:desilvaminuka@gmail.com" class="social-pill" data-cursor="EMAIL">Email <span class="arrow">↗</span></a>
+        <a href="https://www.linkedin.com/in/minukadesilva/" class="social-pill" data-cursor="VIEW">LinkedIn <span class="arrow">↗</span></a>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="contact-list">
+        <div class="contact-row">
+          <span class="k">Email</span>
+          <a class="v" href="mailto:desilvaminuka@gmail.com">desilvaminuka@gmail.com</a>
+        </div>
+        <div class="contact-row">
+          <span class="k">Phone</span>
+          <span class="v">+94 75 464 5479</span>
+        </div>
+        <div class="contact-row">
+          <span class="k">Location</span>
+          <span class="v">Sri Lanka</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 MINUKA DE SILVA</span>
+  <span>DESIGNED &amp; BUILT WITH CARE</span>
+  <span>BACK TO TOP ↑</span>
+</footer>
+
+</div><!-- /canvas-pad -->
+
+<script>
+  // ---------- Custom cursor ----------
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  const label = document.getElementById('cursorLabel');
+  const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+  if (isFinePointer) {
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    window.addEventListener('mousemove', (e) => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+      label.style.left = mx + 'px'; label.style.top = my + 'px';
+    });
+    function loop(){
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    document.querySelectorAll('[data-cursor]').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        label.textContent = el.getAttribute('data-cursor');
+        label.style.opacity = 1;
+        ring.style.width = '54px';
+        ring.style.height = '54px';
+        ring.style.borderColor = 'var(--vermillion)';
+        dot.style.width = '0px';
+        dot.style.height = '0px';
+      });
+      el.addEventListener('mouseleave', () => {
+        label.style.opacity = 0;
+        ring.style.width = '34px';
+        ring.style.height = '34px';
+        ring.style.borderColor = 'var(--paper)';
+        dot.style.width = '8px';
+        dot.style.height = '8px';
+      });
+    });
+
+    document.querySelectorAll('.artboard').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        label.textContent = 'VIEW PROJECT';
+        label.style.opacity = 1;
+        ring.style.width = '60px';
+        ring.style.height = '60px';
+        ring.style.borderColor = 'var(--marker)';
+      });
+      el.addEventListener('mouseleave', () => {
+        label.style.opacity = 0;
+        ring.style.width = '34px';
+        ring.style.height = '34px';
+        ring.style.borderColor = 'var(--paper)';
+      });
+    });
+  } else {
+    dot.style.display = 'none';
+    ring.style.display = 'none';
+    label.style.display = 'none';
+  }
+
+  // ---------- Scroll reveal ----------
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('in');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(r => obs.observe(r));
+</script>
+
+</body>
+</html>
